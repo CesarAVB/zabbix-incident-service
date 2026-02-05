@@ -1,9 +1,22 @@
 package br.com.cesaravb.zabbixincident.domain.entity;
 
-import jakarta.persistence.*;
-import lombok.*;
-
 import java.time.LocalDateTime;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "incidents")
@@ -21,11 +34,44 @@ public class Incident {
     @Column(nullable = false, unique = true)
     private String zabbixEventId;
 
+    @Column(name = "host_ids", nullable = true)
+    private String hostids;
+
     @Column(nullable = false)
     private String title;
 
     @Column(columnDefinition = "TEXT")
     private String description;
+
+    @Column(name = "alert_message", columnDefinition = "TEXT", nullable = true)
+    private String alertMessage;
+
+    @Column(name = "event_name", nullable = true)
+    private String eventName;
+
+    @Column(name = "event_opdata", nullable = true)
+    private String eventOpdata;
+
+    @Column(nullable = true)
+    private String host;
+
+    @Column(name = "host_ip", nullable = true)
+    private String hostIp;
+
+    @Column(nullable = true)
+    private String item;
+
+    @Column(name = "item_key", nullable = true)
+    private String itemKey;
+
+    @Column(nullable = true)
+    private String trigger;
+
+    @Column(name = "url_zabbix", columnDefinition = "TEXT", nullable = true)
+    private String urlZabbix;
+
+    @Column(nullable = true)
+    private String valor;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
