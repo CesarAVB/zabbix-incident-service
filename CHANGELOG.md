@@ -1,3 +1,10 @@
+## [1.1.0](https://github.com/CesarAVB/zabbix-incident-service/compare/v1.0.0...v1.1.0) (2026-02-05)
+
+### Features
+
+* adiciona JavaDocs detalhadas aos DTOs de request e response do ([f115cbf](https://github.com/CesarAVB/zabbix-incident-service/commit/f115cbfb9c869b3c09ce507c10bd7a9e2937fcb4))
+* adiciona novos campos à entidade Incident para detalhamento de ([2eddbbb](https://github.com/CesarAVB/zabbix-incident-service/commit/2eddbbbb66024427f32f389a0ab31834ecbf737c))
+
 ## 1.0.0 (2026-02-05)
 
 ### Features
