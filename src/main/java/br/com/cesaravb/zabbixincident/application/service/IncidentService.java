@@ -1,6 +1,7 @@
 package br.com.cesaravb.zabbixincident.application.service;
 
 import br.com.cesaravb.zabbixincident.domain.entity.Incident;
+import br.com.cesaravb.zabbixincident.domain.enums.IncidentStatus;
 import br.com.cesaravb.zabbixincident.domain.repository.IncidentRepository;
 import br.com.cesaravb.zabbixincident.dtos.request.CreateIncidentRequest;
 import br.com.cesaravb.zabbixincident.dtos.request.UpdateIncidentStatusRequest;
@@ -74,7 +75,7 @@ public class IncidentService {
     // ====================================
     public IncidentResponse updateIncidentStatus(Long id, UpdateIncidentStatusRequest request) {
         Incident incident = incidentRepository.findById(id).orElseThrow(() -> new RuntimeException("Incidente não encontrado com ID: " + id));
-        Incident.IncidentStatus newStatus = Incident.IncidentStatus.valueOf(request.status());
+        IncidentStatus newStatus = IncidentStatus.valueOf(request.status());
         incident.setStatus(newStatus);
         Incident updatedIncident = incidentRepository.save(incident);
         rabbitTemplate.convertAndSend(incidentExchange, incidentRoutingKey, updatedIncident);
