@@ -121,10 +121,20 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
 					<annotationProcessorPaths>
+					
+						<!-- Lombok: gera automaticamente getters, setters, construtores, equals/hashCode e outros métodos em tempo de compilação -->
 						<path>
 							<groupId>org.projectlombok</groupId>
 							<artifactId>lombok</artifactId>
 						</path>
+						
+						<!-- MapStruct Processor: responsável por gerar as classes de implementação dos mappers (ex: IncidentMapperImpl) e integrá-las ao Spring -->
+						<path>
+			                <groupId>org.mapstruct</groupId>
+			                <artifactId>mapstruct-processor</artifactId>
+			                <version>1.5.5.Final</version>
+			            </path>
+			            
 					</annotationProcessorPaths>
 				</configuration>
 			</plugin>
