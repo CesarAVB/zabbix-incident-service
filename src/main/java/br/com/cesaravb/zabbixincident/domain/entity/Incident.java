@@ -2,6 +2,8 @@ package br.com.cesaravb.zabbixincident.domain.entity;
 
 import java.time.LocalDateTime;
 
+import br.com.cesaravb.zabbixincident.domain.enums.IncidentStatus;
+import br.com.cesaravb.zabbixincident.domain.enums.SeverityLevel;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -64,7 +66,7 @@ public class Incident {
     @Column(name = "item_key", nullable = true)
     private String itemKey;
 
-    @Column(nullable = true)
+    @Column(name = "trigger_name", nullable = true)
     private String trigger;
 
     @Column(name = "url_zabbix", columnDefinition = "TEXT", nullable = true)
@@ -101,11 +103,4 @@ public class Incident {
         updatedAt = LocalDateTime.now();
     }
 
-    public enum SeverityLevel {
-        CRITICAL, HIGH, MEDIUM, LOW, INFO
-    }
-
-    public enum IncidentStatus {
-        OPEN, IN_PROGRESS, RESOLVED, CLOSED
-    }
 }
