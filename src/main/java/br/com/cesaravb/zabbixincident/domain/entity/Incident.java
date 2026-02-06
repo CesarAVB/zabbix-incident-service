@@ -33,10 +33,10 @@ public class Incident {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String zabbixEventId;
 
-    @Column(name = "host_ids", nullable = true)
+    @Column(name = "host_ids", nullable = true, unique = true)
     private String hostids;
 
     @Column(nullable = false)
