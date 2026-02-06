@@ -1,3 +1,10 @@
+## [1.4.0](https://github.com/CesarAVB/zabbix-incident-service/compare/v1.3.0...v1.4.0) (2026-02-06)
+
+### Features
+
+* atualiza CHANGELOG.md para incluir a versão 1.3.0 com novas ([d2496ab](https://github.com/CesarAVB/zabbix-incident-service/commit/d2496ab3cd4b8b4fb81e359382552b8b6e1b6100))
+* atualiza configuração do RabbitMQ para processamento assíncrono de ([39843b3](https://github.com/CesarAVB/zabbix-incident-service/commit/39843b30ed46cd6801477099c603f7771da2831c))
+
 ## [1.3.0](https://github.com/CesarAVB/zabbix-incident-service/compare/v1.2.0...v1.3.0) (2026-02-06)
 
 ### Features
