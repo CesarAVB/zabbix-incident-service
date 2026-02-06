@@ -1,3 +1,16 @@
+## [1.2.0](https://github.com/CesarAVB/zabbix-incident-service/compare/v1.1.0...v1.2.0) (2026-02-06)
+
+### Features
+
+* adiciona dependências do Lombok e MapStruct no pom.xml ([02bcdcb](https://github.com/CesarAVB/zabbix-incident-service/commit/02bcdcb93d27106d0cc99c9aa44e522120307564))
+* adiciona enums IncidentStatus e SeverityLevel para gerenciamento ([3d03145](https://github.com/CesarAVB/zabbix-incident-service/commit/3d03145e2c5b4a7849d9babb797f368ba7b304f8))
+* adiciona JavaDocs detalhadas ao IncidentMapper para conversão de ([5312b32](https://github.com/CesarAVB/zabbix-incident-service/commit/5312b32a90faa493391286c9b9d656af672adff7))
+* atualiza a entidade Incident para incluir enums IncidentStatus e ([6b8c0f3](https://github.com/CesarAVB/zabbix-incident-service/commit/6b8c0f333986ae24ef816c8c8f0b7b2edbef3b7f))
+* atualiza CHANGELOG.md para incluir novas funcionalidades e ([e584f28](https://github.com/CesarAVB/zabbix-incident-service/commit/e584f285c0410f6d059d09b918ccf67d4a112bd3))
+* atualiza configurações de conexão e adiciona suporte a WebSocket e ([137c8a5](https://github.com/CesarAVB/zabbix-incident-service/commit/137c8a5c4a6cdd42745aef3b529d3042cc49a9d9))
+* refatora o uso de IncidentStatus na classe IncidentService ([eb54413](https://github.com/CesarAVB/zabbix-incident-service/commit/eb54413be4c5210eb44696b0d8217d3454fbdd87))
+* Torna configurações de CORS e WebSocket parametrizáveis por ([652d09c](https://github.com/CesarAVB/zabbix-incident-service/commit/652d09c8da4117a9cd55be00ad09eaa29ebfa14c))
+
 ## [1.1.0](https://github.com/CesarAVB/zabbix-incident-service/compare/v1.0.0...v1.1.0) (2026-02-05)
 
 ### Features
