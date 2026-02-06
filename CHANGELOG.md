@@ -1,3 +1,9 @@
+## [1.3.0](https://github.com/CesarAVB/zabbix-incident-service/compare/v1.2.0...v1.3.0) (2026-02-06)
+
+### Features
+
+* implementa IncidentController com endpoints para gerenciamento de ([8727a24](https://github.com/CesarAVB/zabbix-incident-service/commit/8727a24ea7110ca633b7f5827ba9cc80b3c3ebd6))
+
 ## [1.2.0](https://github.com/CesarAVB/zabbix-incident-service/compare/v1.1.0...v1.2.0) (2026-02-06)
 
 ### Features
