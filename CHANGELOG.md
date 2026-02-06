@@ -1,3 +1,10 @@
+## [1.6.0](https://github.com/CesarAVB/zabbix-incident-service/compare/v1.5.0...v1.6.0) (2026-02-06)
+
+### Features
+
+* ajusta restrições de coluna na entidade Incident para permitir ([a5691d7](https://github.com/CesarAVB/zabbix-incident-service/commit/a5691d79babdc370dd98345e654a26d1f4b6a5e6))
+* atualiza CHANGELOG.md para incluir a versão 1.5.0 com novas ([0c28547](https://github.com/CesarAVB/zabbix-incident-service/commit/0c28547be3f53b297b58614178195b3632f7e8d2))
+
 ## [1.5.0](https://github.com/CesarAVB/zabbix-incident-service/compare/v1.4.0...v1.5.0) (2026-02-06)
 
 ### Features
