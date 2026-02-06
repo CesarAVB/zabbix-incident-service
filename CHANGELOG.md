@@ -1,3 +1,13 @@
+## [1.5.0](https://github.com/CesarAVB/zabbix-incident-service/compare/v1.4.0...v1.5.0) (2026-02-06)
+
+### Features
+
+* adiciona logging detalhado e documentação para endpoints do ([e1ce152](https://github.com/CesarAVB/zabbix-incident-service/commit/e1ce15241a89f6a213731d89cd1e0d7565f39782))
+* adiciona novos métodos de busca e contagem no IncidentRepository ([ac29aaf](https://github.com/CesarAVB/zabbix-incident-service/commit/ac29aaff9bd4cd631298e51a44866985a6c76992))
+* aprimora IncidentService e WebSocketNotificationService com ([c887f3e](https://github.com/CesarAVB/zabbix-incident-service/commit/c887f3ed7616dedbbfbf794bc164aae2185e8707))
+* atualiza CHANGELOG.md para incluir a versão 1.4.0 com novas ([1fa5556](https://github.com/CesarAVB/zabbix-incident-service/commit/1fa5556c4877c98a73285747748f1022014a6137))
+* implementa listener para consumo assíncrono de mensagens do ([75ae082](https://github.com/CesarAVB/zabbix-incident-service/commit/75ae082f61def228e9cd36201f9030d8a935b0c5))
+
 ## [1.4.0](https://github.com/CesarAVB/zabbix-incident-service/compare/v1.3.0...v1.4.0) (2026-02-06)
 
 ### Features
