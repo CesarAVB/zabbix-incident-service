@@ -1,142 +1,235 @@
-# 🚀 ZabbixIncidentService
+# 🚨 Zabbix Incident Service
 
-[![Java](https://img.shields.io/badge/Java-21-orange?style=for-the-badge&logo=java)](https://www.oracle.com/java/)
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.10-brightgreen?style=for-the-badge&logo=spring-boot)](https://spring.io/projects/spring-boot)
-[![MySQL](https://img.shields.io/badge/MySQL-8.0-blue?style=for-the-badge&logo=mysql)](https://www.mysql.com/)
-[![RabbitMQ](https://img.shields.io/badge/RabbitMQ-3.13-FF6600?style=for-the-badge&logo=rabbitmq)](https://www.rabbitmq.com/)
-[![WebSocket](https://img.shields.io/badge/WebSocket-STOMP-9cf?style=for-the-badge&logo=websocket)](https://stomp.github.io/)
-[![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?style=for-the-badge&logo=docker)](https://www.docker.com/)
+[![Java](https://img.shields.io/badge/Java-21-orange?logo=java)](https://www.java.com/)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.10-brightgreen?logo=spring-boot)](https://spring.io/projects/spring-boot)
+[![MySQL](https://img.shields.io/badge/MySQL-8.0-blue?logo=mysql)](https://www.mysql.com/)
+[![RabbitMQ](https://img.shields.io/badge/RabbitMQ-3.13-orange?logo=rabbitmq)](https://www.rabbitmq.com/)
+[![WebSocket](https://img.shields.io/badge/WebSocket-STOMP-green)](https://stomp.github.io/)
+[![Docker](https://img.shields.io/badge/Docker-Compose-blue?logo=docker)](https://www.docker.com/)
+[![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
-[![GitHub](https://img.shields.io/badge/GitHub-zabbix--incident--service-black?style=for-the-badge&logo=github)](https://github.com/cesaravb/zabbix-incident-service)
-[![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen?style=for-the-badge)](https://github.com/cesaravb/zabbix-incident-service/actions)
-[![Code Quality](https://img.shields.io/badge/Code%20Quality-A%2B-brightgreen?style=for-the-badge)](https://github.com/cesaravb/zabbix-incident-service)
+API REST para gerenciamento de incidentes do Zabbix. Recebe alertas via webhook, armazena em MySQL, processa com RabbitMQ e notifica via WebSocket. Frontend React exibe incidentes em tempo real. Utilizado pelo NetMap.
 
 ---
 
-## 📋 Visão Geral
+## 📑 Sumário
 
-Microserviço **Spring Boot 3.5.10** para integração com **Zabbix**, processamento de incidentes via **RabbitMQ** e notificações em tempo real através de **WebSocket**.
+- [Visão Geral](#-visão-geral)
+- [Arquitetura](#-arquitetura)
+- [Tecnologias](#-tecnologias)
+- [Instalação](#-instalação)
+- [Configuração](#-configuração)
+- [API Endpoints](#-api-endpoints)
+- [WebSocket](#-websocket)
+- [Docker](#-docker)
+- [Desenvolvimento](#-desenvolvimento)
+- [Deployment](#-deployment)
+- [Troubleshooting](#-troubleshooting)
+- [Contribuindo](#-contribuindo)
+- [Licença](#-licença)
 
-O serviço recebe incidentes do Zabbix via REST API, armazena em MySQL, publica em fila RabbitMQ e notifica o frontend em tempo real via WebSocket.
+---
 
-### ✨ Funcionalidades Principais
+## 🎯 Visão Geral
 
-- ✅ **REST API** - Receber incidentes do Zabbix
-- ✅ **RabbitMQ** - Processamento assíncrono de mensagens
-- ✅ **WebSocket (STOMP)** - Notificações em tempo real para frontend
-- ✅ **MySQL** - Persistência de dados
-- ✅ **Validação** - Bean Validation com mensagens em português
-- ✅ **Exception Handling** - Tratamento global de erros
-- ✅ **CORS** - Configurado para Angular/Frontend
-- ✅ **Docker** - Totalmente containerizado
-- ✅ **Health Check** - Verificação de saúde da aplicação
-- ✅ **DTOs** - Padrão Record (Java 21)
-- ✅ **MapStruct** - Mapeamento automático de entidades
+O **Zabbix Incident Service** é um microserviço responsável por:
+
+1. **Receber** alertas do Zabbix via webhook HTTP
+2. **Armazenar** incidentes em banco de dados MySQL
+3. **Processar** de forma assíncrona com RabbitMQ
+4. **Notificar** o frontend em tempo real via WebSocket
+5. **Exibir** incidentes no NetMap (React frontend)
+
+### Fluxo Completo
+
+```
+Zabbix → POST /api/incidents → Controller → Service → MySQL
+                                              ↓
+                                          RabbitMQ
+                                              ↓
+                                          Listener
+                                              ↓
+                                          WebSocket
+                                              ↓
+                                    NetMap (Frontend)
+                                    Atualização em
+                                      tempo real! 🎉
+```
 
 ---
 
 ## 🏗️ Arquitetura
 
+### Camadas
+
 ```
-┌─────────────┐
-│   Zabbix    │ POST /api/incidents
-└──────┬──────┘
-       │
-       ▼
-┌──────────────────────────────┐
-│ ZabbixIncidentService (Java) │
-│  - REST API                  │
-│  - Service Layer             │
-│  - MySQL Database            │
-└──────┬───────────┬───────────┘
-       │           │
-       │ Publica   │ Consome
-       ▼           ▼
-   ┌──────────────────────┐
-   │    RabbitMQ          │
-   │  - Exchange          │
-   │  - Queue             │
-   │  - Listener          │
-   └──────────┬───────────┘
-              │
-              │ Push via WebSocket
-              ▼
-       ┌──────────────┐
-       │   Frontend   │
-       │  (Angular)   │
-       └──────────────┘
+┌────────────────────────────────────────────────────┐
+│  PRESENTATION LAYER (api/controller/)              │
+│  • IncidentController - Recebe requisições HTTP    │
+│  • HealthController - Status da aplicação          │
+└────────────────────────────────────────────────────┘
+                         ↓
+┌────────────────────────────────────────────────────┐
+│  APPLICATION LAYER (application/service/)          │
+│  • IncidentService - Lógica de negócio             │
+│  • WebSocketNotificationService - Notificações     │
+│  • IncidentListener - Consome fila RabbitMQ        │
+└────────────────────────────────────────────────────┘
+                         ↓
+┌────────────────────────────────────────────────────┐
+│  DOMAIN LAYER (domain/entity/)                     │
+│  • Incident - Modelo de dados                      │
+│  • SeverityLevel - Enum de severidades             │
+│  • IncidentStatus - Enum de status                 │
+└────────────────────────────────────────────────────┘
+                         ↓
+┌────────────────────────────────────────────────────┐
+│  INFRASTRUCTURE LAYER (infrastructure/config/)    │
+│  • MySQL - Banco de dados                          │
+│  • RabbitMQ - Fila de mensagens                    │
+│  • WebSocket - Comunicação tempo real              │
+└────────────────────────────────────────────────────┘
 ```
+
+### Componentes
+
+- **Controller**: Recebe requisições HTTP do Zabbix
+- **Service**: Coordena operações (save, publish, notify)
+- **Repository**: Acessa dados no MySQL
+- **Mapper**: Converte entre DTOs e Entities (MapStruct)
+- **Listener**: Consome mensagens da fila RabbitMQ
+- **WebSocketNotificationService**: Envia notificações em tempo real
 
 ---
 
-## 💻 Tecnologias
+## 🛠️ Tecnologias
 
-| Tecnologia | Versão | Função |
-|-----------|--------|--------|
-| **Java** | 21 | Linguagem de programação |
-| **Spring Boot** | 3.5.10 | Framework principal |
-| **Spring Data JPA** | 3.5.10 | Persistência de dados |
-| **Spring AMQP** | 3.5.10 | Integração RabbitMQ |
-| **Spring WebSocket** | 3.5.10 | Comunicação real-time |
-| **MySQL** | 8.0+ | Banco de dados |
-| **RabbitMQ** | 3.13+ | Message Broker |
-| **MapStruct** | 1.6.0 | Mapeamento de DTOs |
+### Backend
+
+| Tecnologia | Versão | Uso |
+|-----------|--------|-----|
+| **Java** | 21 | Linguagem principal |
+| **Spring Boot** | 3.5.10 | Framework web |
+| **Spring Data JPA** | 3.5.10 | ORM |
+| **Spring AMQP** | 3.5.10 | RabbitMQ client |
+| **Spring WebSocket** | 3.5.10 | Comunicação tempo real |
+| **MySQL** | 8.0 | Banco de dados |
+| **RabbitMQ** | 3.13 | Fila assíncrona |
+| **MapStruct** | 1.5.5 | Mapping de objetos |
 | **Lombok** | 1.18.30 | Redução de boilerplate |
-| **Docker** | Latest | Containerização |
+| **Validation** | Jakarta 3.0 | Validação de dados |
+
+### DevOps
+
+| Tecnologia | Uso |
+|-----------|-----|
+| **Docker** | Containerização |
+| **Docker Compose** | Orquestração local |
+| **Maven** | Build e dependências |
+| **Git** | Controle de versão |
+
+### Frontend
+
+| Tecnologia | Versão |
+|-----------|--------|
+| **React** | 19+ |
+| **SockJS** | Para WebSocket |
+| **STOMP** | Protocolo WebSocket |
 
 ---
 
-## 🚀 Quick Start
+## 💻 Instalação
 
-### Com Docker Compose (Recomendado)
+### Pré-requisitos
 
-```bash
-# 1. Clone o repositório
-git clone https://github.com/cesaravb/zabbix-incident-service.git
-cd zabbix-incident-service
-
-# 2. Inicie os serviços
-docker-compose up -d
-
-# 3. Verifique a saúde
-curl http://localhost:8080/api/health
-```
-
-### Localmente (Sem Docker)
-
-#### Pré-requisitos
-- Java 21 instalado
+- Java 21+
 - Maven 3.8+
-- MySQL 8.0+
-- RabbitMQ 3.13+
+- Docker e Docker Compose
+- Git
 
-#### Passos
+### Clone o Repositório
 
 ```bash
-# 1. Clone
-git clone https://github.com/cesaravb/zabbix-incident-service.git
+git clone https://github.com/seu-usuario/zabbix-incident-service.git
 cd zabbix-incident-service
+```
 
-# 2. Crie o banco de dados
-mysql -u root -p
-CREATE DATABASE zabbix_incident_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-EXIT;
+### Instalação Local (sem Docker)
 
-# 3. Configure application-local.properties
-# Edite: src/main/resources/application-local.properties
-# Verifique as credenciais do MySQL e RabbitMQ
+#### 1. Iniciar MySQL
 
-# 4. Execute a aplicação
+```bash
+docker run -d \
+  --name mysql \
+  -e MYSQL_ROOT_PASSWORD=root \
+  -e MYSQL_DATABASE=zabbix_incident_db \
+  -e MYSQL_USER=incident_user \
+  -e MYSQL_PASSWORD=incident_pass \
+  -p 3306:3306 \
+  mysql:8.0
+```
+
+#### 2. Iniciar RabbitMQ
+
+```bash
+docker run -d \
+  --name rabbitmq \
+  -e RABBITMQ_DEFAULT_USER=guest \
+  -e RABBITMQ_DEFAULT_PASS=guest \
+  -p 5672:5672 \
+  -p 15672:15672 \
+  rabbitmq:3.13-management
+```
+
+#### 3. Compilar e Executar
+
+```bash
+mvn clean install
 mvn spring-boot:run -Dspring-boot.run.arguments="--spring.profiles.active=local"
+```
 
-# 5. Acesse
-curl http://localhost:8080/api/health
+#### 4. Verificar Saúde
+
+```bash
+curl http://localhost:8080/health
 ```
 
 ---
 
-## 📡 Endpoints
+## ⚙️ Configuração
+
+### Variáveis de Ambiente
+
+#### Desenvolvimento
+
+```properties
+# application-local.properties
+
+server.port=8080
+spring.datasource.url=jdbc:mysql://localhost:3306/zabbix_incident_db
+spring.datasource.username=incident_user
+spring.datasource.password=incident_pass
+spring.rabbitmq.host=localhost
+spring.rabbitmq.port=5672
+app.cors.allowed-origins=http://localhost:4200,http://localhost:3000
+app.websocket.allowed-origins=http://localhost:4200,http://localhost:3000
+```
+
+#### Produção
+
+```bash
+export DATABASE_URL=jdbc:mysql://mysql:3306/zabbix_incident_db
+export DATABASE_USER=incident_user
+export DATABASE_PASSWORD=<senha-segura>
+export RABBITMQ_HOST=rabbitmq
+export RABBITMQ_PORT=5672
+export CORS_ALLOWED_ORIGINS=https://netmap.redelognet.com.br,https://api.incidents.redelognet.com.br
+export WEBSOCKET_ALLOWED_ORIGINS=https://netmap.redelognet.com.br,https://api.incidents.redelognet.com.br
+```
+
+---
+
+## 🔌 API Endpoints
 
 ### Criar Incidente
 
@@ -145,42 +238,45 @@ POST /api/incidents
 Content-Type: application/json
 
 {
-  "zabbixEventId": "evt_12345",
-  "title": "CPU alta no servidor prod-01",
-  "description": "Utilização acima de 90%",
-  "severity": "CRITICAL",
+  "zabbixEventId": "28316936",
+  "hostids": "10084",
+  "title": "ICMP Ping Down",
+  "severity": "High",
   "source": "zabbix"
 }
 ```
 
 **Response (201 Created):**
+
 ```json
 {
   "status": 201,
   "message": "Incidente criado com sucesso",
   "data": {
     "id": 1,
-    "zabbixEventId": "evt_12345",
-    "title": "CPU alta no servidor prod-01",
-    "severity": "CRITICAL",
+    "zabbixEventId": "28316936",
+    "title": "ICMP Ping Down",
+    "severity": "High",
     "status": "OPEN",
-    "createdAt": "2025-02-04T10:30:45",
-    "updatedAt": "2025-02-04T10:30:45"
+    "createdAt": "2026-02-05T04:45:17",
+    "updatedAt": "2026-02-05T04:45:17"
   },
-  "timestamp": "2025-02-04T10:30:45"
+  "timestamp": "2026-02-05T04:45:17"
 }
 ```
 
 ### Listar Incidentes
 
 ```http
-GET /api/incidents?page=0&size=10&sort=createdAt,desc
+GET /api/incidents?page=0&size=10
 ```
 
-### Buscar por ID
+### Buscar Incidente
 
 ```http
 GET /api/incidents/1
+GET /api/incidents/zabbix/28316936
+GET /api/incidents/host/10084?page=0&size=10
 ```
 
 ### Atualizar Status
@@ -203,319 +299,148 @@ DELETE /api/incidents/1
 ### Health Check
 
 ```http
-GET /api/health
+GET /health
 ```
-
-📖 **[Documentação Completa de Endpoints](./docs/API_ENDPOINTS.md)**
 
 ---
 
-## 🔌 WebSocket
+## 📡 WebSocket
 
-### Conectar e Subscrever
+### Conectar (React Frontend)
 
 ```javascript
-const socket = new SockJS('http://localhost:8080/ws/incidents');
+import SockJS from 'sockjs-client';
+import { Stomp } from '@stomp/stompjs';
+
+const socket = new SockJS('https://incidents.redelognet.com.br/ws/incidents');
 const stompClient = Stomp.over(socket);
 
-stompClient.connect({}, function(frame) {
-    console.log('Conectado ao WebSocket');
-    
-    // Subscrever a novos incidentes
-    stompClient.subscribe('/topic/incidents', function(message) {
-        const incident = JSON.parse(message.body);
-        console.log('Novo incidente recebido:', incident);
-        // Atualizar UI
-    });
+stompClient.connect({}, () => {
+  stompClient.subscribe('/topic/incidents', (message) => {
+    const incident = JSON.parse(message.body);
+    console.log('Novo incidente:', incident);
+  });
 });
 ```
 
-### Tópicos Disponíveis
+### Tópico
 
-| Tópico | Descrição |
-|--------|-----------|
-| `/topic/incidents` | Notificações de incidentes criados/atualizados |
-| `/topic/incidents/deleted` | Notificações de incidentes deletados |
+**`/topic/incidents`** - Recebe novos incidentes e atualizações
 
 ---
 
-## 📚 Documentação
+## 🐳 Docker
 
-| Documento | Descrição |
-|-----------|-----------|
-| 📖 [API Endpoints](./docs/API_ENDPOINTS.md) | Detalhes de todos os endpoints REST |
-| 🧠 [Classes Explicadas](./docs/CLASSES.md) | Função e funcionamento de cada classe |
-| 🏗️ [Arquitetura](./docs/ARCHITECTURE.md) | Padrões, camadas e design |
-| 🐳 [Docker Compose](./docs/DOCKER_COMPOSE.md) | Como usar Docker localmente |
-
----
-
-## 📁 Estrutura do Projeto
-
-```
-zabbix-incident-service/
-├── src/main/java/br/com/cesaravb/zabbixincident/
-│   ├── api/
-│   │   ├── controller/          # REST Controllers
-│   │   └── handler/             # Exception Handlers
-│   ├── application/
-│   │   ├── service/             # Lógica de negócio
-│   │   └── listener/            # RabbitMQ Listeners
-│   ├── domain/
-│   │   ├── entity/              # Entidades JPA
-│   │   └── repository/          # Interfaces de repositório
-│   ├── infrastructure/
-│   │   ├── config/              # Configurações
-│   │   └── websocket/           # WebSocket configs
-│   ├── dtos/
-│   │   ├── request/             # DTOs de entrada
-│   │   └── response/            # DTOs de saída
-│   ├── mapper/                  # MapStruct mappers
-│   └── ZabbixIncidentServiceApplication.java
-├── src/main/resources/
-│   ├── application.properties
-│   ├── application-local.properties
-│   └── application-prod.properties
-├── docs/
-│   ├── API_ENDPOINTS.md
-│   ├── CLASSES.md
-│   ├── ARCHITECTURE.md
-│   └── DOCKER_COMPOSE.md
-├── pom.xml
-├── Dockerfile
-├── docker-compose.yml
-└── README.md
-```
-
----
-
-## 🔧 Configuração
-
-### Ambiente Local
-
-Edite `application-local.properties`:
-
-```properties
-# Database
-spring.datasource.url=jdbc:mysql://localhost:3306/zabbix_incident_db
-spring.datasource.username=root
-spring.datasource.password=root
-
-# RabbitMQ
-spring.rabbitmq.host=localhost
-spring.rabbitmq.port=5672
-spring.rabbitmq.username=guest
-spring.rabbitmq.password=guest
-```
-
-### Ambiente de Produção
-
-Use variáveis de ambiente:
+### Docker Compose
 
 ```bash
-export DB_URL=jdbc:mysql://prod-db:3306/zabbix_incident_db
-export DB_USERNAME=prod_user
-export DB_PASSWORD=secure_password
-export RABBITMQ_HOST=prod-rabbitmq
-export RABBITMQ_USERNAME=prod_user
-export RABBITMQ_PASSWORD=secure_password
+# Iniciar
+docker-compose up -d
 
-java -jar zabbix-incident-service-1.0.0.jar --spring.profiles.active=prod
+# Ver logs
+docker-compose logs -f app
+
+# Parar
+docker-compose down
 ```
 
----
-
-## 🧪 Testando a API
-
-### Com cURL
+### Build
 
 ```bash
-# Criar incidente
-curl -X POST http://localhost:8080/api/incidents \
-  -H "Content-Type: application/json" \
-  -d '{
-    "zabbixEventId": "evt_test_001",
-    "title": "Teste cURL",
-    "severity": "HIGH",
-    "source": "curl-test"
-  }'
-
-# Listar incidentes
-curl http://localhost:8080/api/incidents
-
-# Health check
-curl http://localhost:8080/api/health
-```
-
-### Com Postman
-
-[Importe a coleção Postman](./docs/API_ENDPOINTS.md#-testar-com-postman)
-
----
-
-## 🐛 Troubleshooting
-
-### Erro: "Cannot connect to MySQL"
-
-```bash
-# Verifique se MySQL está rodando
-mysql -u root -p
-
-# Se usar Docker:
-docker-compose logs mysql
-docker-compose restart mysql
-```
-
-### Erro: "Cannot connect to RabbitMQ"
-
-```bash
-# Verifique se RabbitMQ está rodando
-docker-compose logs rabbitmq
-
-# Acesse Management UI
-http://localhost:15672  # guest/guest
-```
-
-### Porta 8080 já em uso
-
-```bash
-# Mude a porta em application-local.properties
-server.port=8081
-
-# Ou mate o processo
-lsof -i :8080
-kill -9 <PID>
-```
-
----
-
-## 📊 Monitoramento
-
-### Health Check
-
-```bash
-curl http://localhost:8080/api/health
-```
-
-### RabbitMQ Management
-
-```
-http://localhost:15672
-Usuário: guest
-Senha: guest
-```
-
-### MySQL
-
-```bash
-mysql -h localhost -u incident_user -p zabbix_incident_db
-SHOW TABLES;
-SELECT * FROM incidents;
-```
-
----
-
-## 🚀 Deploy
-
-### Docker (Recomendado)
-
-```bash
-# Build
+mvn clean package -DskipTests
 docker build -t zabbix-incident-service:1.0.0 .
-
-# Push para registro
-docker tag zabbix-incident-service:1.0.0 seu-registry/zabbix-incident-service:1.0.0
 docker push seu-registry/zabbix-incident-service:1.0.0
-
-# Run
-docker run -p 8080:8080 \
-  -e SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/zabbix_incident_db \
-  -e SPRING_RABBITMQ_HOST=rabbitmq \
-  seu-registry/zabbix-incident-service:1.0.0
 ```
+
+---
+
+## 🚀 Desenvolvimento
+
+### Estrutura
+
+```
+src/main/java/br/com/cesaravb/zabbixincident/
+├── api/controller/
+├── application/service/
+├── domain/entity/
+├── domain/enums/
+├── domain/repository/
+├── dtos/request/
+├── dtos/response/
+├── mapper/
+└── infrastructure/config/
+```
+
+### Git Workflow
+
+```bash
+git checkout -b feat/nova-funcionalidade
+git add .
+npm run commit  # Commitizen
+git push origin feat/nova-funcionalidade
+```
+
+---
+
+## 📦 Deployment
 
 ### Kubernetes
 
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: zabbix-incident-service
-spec:
-  replicas: 3
-  selector:
-    matchLabels:
-      app: zabbix-incident-service
-  template:
-    metadata:
-      labels:
-        app: zabbix-incident-service
-    spec:
-      containers:
-      - name: app
-        image: seu-registry/zabbix-incident-service:1.0.0
-        ports:
-        - containerPort: 8080
-        env:
-        - name: SPRING_DATASOURCE_URL
-          value: jdbc:mysql://mysql-service:3306/zabbix_incident_db
-        - name: SPRING_RABBITMQ_HOST
-          value: rabbitmq-service
+```bash
+mvn clean package -DskipTests
+docker build -t zabbix-incident-service:1.0.0 .
+docker push seu-registry/zabbix-incident-service:1.0.0
+kubectl apply -f k8s/deployment.yaml
 ```
 
 ---
 
-## 📈 Performance
+## 🔍 Troubleshooting
 
-### Otimizações Implementadas
+### MySQL não conecta
 
-- ✅ Índice único em `zabbix_event_id`
-- ✅ Paginação em listagens
-- ✅ Processamento assíncrono (RabbitMQ)
-- ✅ Lazy loading de dados
-- ✅ Transações gerenciadas
+```bash
+docker ps | grep mysql
+docker logs mysql
+```
 
-### Benchmarks
+### RabbitMQ offline
 
-| Operação | Tempo Médio |
-|----------|-----------|
-| Criar incidente | ~20ms |
-| Listar 10 incidentes | ~15ms |
-| Buscar por ID | ~5ms |
-| Atualizar status | ~18ms |
-| WebSocket push | ~50ms |
+```bash
+docker ps | grep rabbitmq
+docker logs rabbitmq
+```
 
----
+### WebSocket falha
 
-## 🔒 Segurança
-
-- ✅ Validação de entrada (Bean Validation)
-- ✅ CORS configurado para frontend
-- ✅ Tratamento de exceções global
-- ✅ Transações ACID
-- ✅ SQL injection protection (JPA)
-- ✅ Senhas em variáveis de ambiente (produção)
-
----
-
-## 📝 Padrões Usados
-
-- ✅ **Layered Architecture** - Camadas bem definidas
-- ✅ **Repository Pattern** - Abstração de persistência
-- ✅ **Service Pattern** - Lógica de negócio centralizada
-- ✅ **DTO Pattern** - Transferência de dados padronizada
-- ✅ **Observer Pattern** - Listeners e eventos
-- ✅ **Dependency Injection** - Spring IoC
-- ✅ **Event-Driven Architecture** - RabbitMQ + WebSocket
+```bash
+curl http://localhost:8080/health
+docker logs app
+```
 
 ---
 
 ## 🤝 Contribuindo
 
-1. **Fork** o projeto
-2. **Crie uma branch** (`git checkout -b feature/AmazingFeature`)
-3. **Commit** suas mudanças (`git commit -m 'Add AmazingFeature'`)
-4. **Push** para a branch (`git push origin feature/AmazingFeature`)
-5. **Abra um Pull Request**
+1. Fork o repositório
+2. Crie uma feature branch
+3. Commit com Conventional Commits
+4. Push e abra Pull Request
 
 ---
+
+## 📄 Licença
+
+MIT License - veja [LICENSE](LICENSE)
+
+---
+
+## 👥 Autores
+
+- **César Augusto** - Desenvolvimento
+
+---
+
+**Status:** ✅ Production Ready  
+**Versão:** 1.0.0  
+**Última atualização:** 05/02/2026
