@@ -434,13 +434,3 @@ docker logs app
 MIT License - veja [LICENSE](LICENSE)
 
 ---
-
-## 👥 Autores
-
-- **César Augusto** - Desenvolvimento
-
----
-
-**Status:** ✅ Production Ready  
-**Versão:** 1.0.0  
-**Última atualização:** 05/02/2026
