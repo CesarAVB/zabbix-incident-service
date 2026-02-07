@@ -12,25 +12,7 @@ API REST para gerenciamento de incidentes do Zabbix. Recebe alertas via webhook,
 
 ---
 
-## 📑 Sumário
-
-- [Visão Geral](#-visão-geral)
-- [Arquitetura](#-arquitetura)
-- [Tecnologias](#-tecnologias)
-- [Instalação](#-instalação)
-- [Configuração](#-configuração)
-- [API Endpoints](#-api-endpoints)
-- [WebSocket](#-websocket)
-- [Docker](#-docker)
-- [Desenvolvimento](#-desenvolvimento)
-- [Deployment](#-deployment)
-- [Troubleshooting](#-troubleshooting)
-- [Contribuindo](#-contribuindo)
-- [Licença](#-licença)
-
----
-
-## 🎯 Visão Geral
+## Visão Geral
 
 O **Zabbix Incident Service** é um microserviço responsável por:
 
@@ -138,7 +120,7 @@ Zabbix → POST /api/incidents → Controller → Service → MySQL
 
 ---
 
-## 💻 Instalação
+## Instalação <a id="instalacao"></a>
 
 ### Pré-requisitos
 
@@ -196,7 +178,7 @@ curl http://localhost:8080/health
 
 ---
 
-## ⚙️ Configuração
+## ⚙️ Configuração <a id="configuracao"></a>
 
 ### Variáveis de Ambiente
 
