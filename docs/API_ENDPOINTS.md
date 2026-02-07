@@ -11,7 +11,6 @@ Documentação detalhada de todos os endpoints REST da aplicação.
 - [Atualizar Status](#atualizar-status)
 - [Deletar Incidente](#deletar-incidente)
 - [Health Check](#health-check)
-- [Códigos de Status](#códigos-de-status)
 - [Valores de Enum](#valores-de-enum)
 
 ---
